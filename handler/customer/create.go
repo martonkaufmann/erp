@@ -24,14 +24,14 @@ func Create(w http.ResponseWriter, r *http.Request) {
     v := r.Context().Value(provider.ValidateKey).(*validator.Validate)
 
     if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-        l.Error("Failed to decode request", err)
+        l.Error("Failed to decode payload", err)
 
-		http.Error(w, "Request failed", http.StatusInternalServerError)
+		http.Error(w, "Request failed", http.StatusBadRequest)
 		return
     }
 
     if err := v.Struct(request); err != nil {
-		http.Error(w, "Validation failed", http.StatusBadRequest)
+		http.Error(w, "Request validation failed", http.StatusBadRequest)
 		return
     }
 
@@ -47,9 +47,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 
-	_, err := fmt.Fprintln(w)
-
-	if err != nil {
+	if 	_, err := fmt.Fprintln(w); err != nil {
 		l.Error("Failed to send response", err)
 	}
 }
