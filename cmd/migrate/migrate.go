@@ -1,20 +1,17 @@
-package provider
+package main
 
 import (
-	"context"
-
+	"github.com/martonkaufmann/erp/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-const DatabaseKey = "database"
-
-func WithDatabase(ctx context.Context) context.Context {
+func main() {
 	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	return context.WithValue(ctx, DatabaseKey, db)
+	db.AutoMigrate(&model.Customer{})
 }

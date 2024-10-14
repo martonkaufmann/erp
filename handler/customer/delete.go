@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/martonkaufmann/erp/http/response"
 	"github.com/martonkaufmann/erp/model"
 	"github.com/martonkaufmann/erp/provider"
 	"gorm.io/gorm"
@@ -16,27 +17,23 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
-		l.Error("Failed to parse id", err)
+		l.Error("Failed to parse id", "error", err)
 
-		http.Error(w, "Invalid id", http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	result := db.Delete(model.Customer{
-		Model: model.Model{
-			ID: model.ModelId(id),
-		},
-	})
+	result := db.Where("id", id).Delete(&model.Customer{})
 
 	if result.Error != nil {
-		l.Error("Failed to delete customer", result.Error)
+		l.Error("Failed to delete customer", "error", result.Error)
 
-		http.Error(w, "Request failed", http.StatusInternalServerError)
+        response.JSON(w, response.Error{Message: "Failed to delete customer"}, http.StatusInternalServerError)
 		return
 	}
 
 	if result.RowsAffected == 0 {
-		http.Error(w, "Customer not found", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
