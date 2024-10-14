@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/martonkaufmann/erp/http/response"
 	"github.com/martonkaufmann/erp/model"
 	"github.com/martonkaufmann/erp/provider"
 	"gorm.io/gorm"
@@ -16,9 +17,9 @@ func Restore(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 
 	if err != nil {
-		l.Error("Failed to parse id", err)
+		l.Error("Failed to parse id", "error", err)
 
-		http.Error(w, "Invalid id", http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
@@ -28,14 +29,14 @@ func Restore(w http.ResponseWriter, r *http.Request) {
 		Update("deleted_at", nil)
 
 	if result.Error != nil {
-		l.Error("Failed to restore customer", result.Error)
+		l.Error("Failed to restore customer", "error", result.Error)
 
-		http.Error(w, "Request failed", http.StatusInternalServerError)
+        response.JSON(w, response.Error{Message: "Request failed"}, http.StatusInternalServerError)
 		return
 	}
 
 	if result.RowsAffected == 0 {
-		http.Error(w, "Customer not found", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

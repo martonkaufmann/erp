@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/martonkaufmann/erp/handler/customer"
-	"github.com/martonkaufmann/erp/middleware"
+	"github.com/martonkaufmann/erp/http/middleware"
 	"github.com/martonkaufmann/erp/provider"
 )
 

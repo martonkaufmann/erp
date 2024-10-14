@@ -9,9 +9,9 @@ import (
 const LogKey = "log"
 
 func WithLog(ctx context.Context) context.Context {
-    l := slog.New(
+	l := slog.New(
 		slog.NewJSONHandler(
-            os.Stdout,
+			os.Stdout,
 			&slog.HandlerOptions{
 				Level:     slog.LevelDebug,
 				AddSource: true,
@@ -19,5 +19,5 @@ func WithLog(ctx context.Context) context.Context {
 		),
 	)
 
-    return context.WithValue(ctx, LogKey, l)
+	return context.WithValue(ctx, LogKey, l)
 }
